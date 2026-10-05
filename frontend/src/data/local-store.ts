@@ -40,6 +40,13 @@ export function listRows(key: string): EntryRow[] {
   return allRows()[key] ?? []
 }
 
+// 写操作前用：绕开内存缓存重新读 localStorage，
+// 两个标签页（两位检修工）同时改同一条记录时，才能拿到对方刚落库的版本。
+export function listRowsFresh(key: string): EntryRow[] {
+  cache = readStorage()
+  return allRows()[key] ?? []
+}
+
 export function saveRows(key: string, rows: EntryRow[]): void {
   const next = { ...allRows(), [key]: rows }
   cache = next

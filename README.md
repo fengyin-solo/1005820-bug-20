@@ -68,4 +68,10 @@ npm run build
 - 字段、状态、动作与流转目标集中在 `frontend/src/data/modules.ts`；示例数据在
   `frontend/src/data/seed.ts`。
 - 状态流转只允许在 `local-service.ts` 里改，页面组件不做业务判断。
+- 拍门检修（sluice）是例外：它有专用服务 `frontend/src/api/sluice-service.ts`，判定口径
+  全系统只有一份，放在 `frontend/src/data/sluice-policy.ts`——密封状况含失效词（默认
+  「老化、破损、失效」）或距上次检修超期（默认 180 天）即判待更换；列表、概览看板与
+  检修详情读的都是这同一份结论。已结案记录保留结案当时的判定快照，口径调整只重算
+  在挂记录并给出前后差异；同一泵站下拍门编号不能重号；每条记录带版本号，两人同时
+  提交只落先到的那一版。
 - 想回到初始数据：清掉浏览器里 `drainage-pump:entries` 这一项，或调用 `resetModule(模块)`。
