@@ -35,4 +35,13 @@ export type ActionResult = {
 export type OverviewResult = {
   cards: { label: string; value: number }[]
   modules: { name: string; created: number; pending: number; abnormal: number }[]
+  /** 拍门检修走独立口径：待更换只数「密封判失效」的拍门，超期单列，三个页面同源。 */
+  sluice: {
+    totalGates: number
+    pendingReplacement: number
+    normal: number
+    overdue: number
+    openTickets: number
+    ruleVersion: number
+  }
 }

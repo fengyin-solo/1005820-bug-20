@@ -1,5 +1,7 @@
 import { MODULE_BY_KEY } from '@/data/modules'
 import { allRows, listRows, resetRows, saveRows } from '@/data/local-store'
+import { CURRENT_RULE_VERSION, currentRule } from '@/data/sluice-rules'
+import { getSluiceStats } from '@/api/sluice-service'
 import type { ActionResult, EntryRow, ModuleMeta, OverviewResult, PageResult } from '@/data/types'
 
 // 会写进数据的「往回走」动作：命中就把这条记录标成异常态，看板上能一眼看出来。
@@ -86,7 +88,17 @@ export function downloadEntries(key: string): void {
 
 export function loadOverview(): OverviewResult {
   const rows = allRows()
+  const sluice = getSluiceStats()
   const modules = [...MODULE_BY_KEY.values()].map((meta) => {
+    // 拍门检修不再用通用台账的 pending/abnormal 计数，改读统一口径，看板与列表、详情必须对得上。
+    if (meta.key === 'sluice') {
+      return {
+        name: meta.name,
+        created: sluice.totalRecords,
+        pending: sluice.openTickets,
+        abnormal: sluice.pendingReplacement + sluice.overdue,
+      }
+    }
     const entries = rows[meta.key] ?? []
     return {
       name: meta.name,
@@ -101,5 +113,19 @@ export function loadOverview(): OverviewResult {
     { label: '待处理', value: modules.reduce((sum, item) => sum + item.pending, 0) },
     { label: '异常量', value: modules.reduce((sum, item) => sum + item.abnormal, 0) },
   ]
-  return { cards, modules }
+  return {
+    cards,
+    modules,
+    sluice: {
+      totalGates: sluice.totalGates,
+      pendingReplacement: sluice.pendingReplacement,
+      normal: sluice.normal,
+      overdue: sluice.overdue,
+      openTickets: sluice.openTickets,
+      ruleVersion: CURRENT_RULE_VERSION,
+    },
+  }
 }
+
+// currentRule 透传给看板展示口径条文，避免页面自己再拼一份规则描述。
+export { currentRule }

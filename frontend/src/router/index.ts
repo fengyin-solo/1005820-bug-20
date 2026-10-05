@@ -35,6 +35,7 @@ const router = createRouter({
     { path: '/floodgate', name: 'floodgate', component: Floodgate },
     { path: '/pumpmaint', name: 'pumpmaint', component: Pumpmaint },
     { path: '/sluice', name: 'sluice', component: Sluice },
+    { path: '/sluice/:id(\\d+)', name: 'sluice-detail', component: () => import('@/views/sluice/detail.vue') },
     { path: '/screen', name: 'screen', component: Screen },
     { path: '/outfallpatrol', name: 'outfallpatrol', component: Outfallpatrol },
     { path: '/floodwarn', name: 'floodwarn', component: Floodwarn },
